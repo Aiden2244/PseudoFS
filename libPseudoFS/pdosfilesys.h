@@ -114,7 +114,7 @@ typedef struct FILE_DESCRIPTOR{
 } PDOS_FILE;
 
 /*
- * The name of the file system
+ * The name of the disk
  */
 extern char* disk_name;
 
