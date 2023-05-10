@@ -1,6 +1,5 @@
 #include <sys/stat.h>
 #include "../libPseudoFS/pdosfilesys.h"
-#include "../libPseudoFS/pdos_mkfs.c"
 
 int main(int argc, char *argv[]) {
     if (argc != 3) {

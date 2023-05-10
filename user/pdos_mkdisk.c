@@ -1,6 +1,5 @@
 #include <sys/stat.h>
 #include "../libPseudoFS/pdosfilesys.h"
-#include "../libPseudoFS/pdos_mkdisk.c"
 
 int main(int argc, char *argv[]) {
     if (argc != 2) {

@@ -1,6 +1,4 @@
 #include "../libPseudoFS/pdosfilesys.h"
-#include "../libPseudoFS/pdos_mkdisk.c"
-#include "../libPseudoFS/pdos_mkfs.c"
 #include <string.h>
 
 int main() {
