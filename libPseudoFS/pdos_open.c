@@ -15,12 +15,13 @@ PDOS_FILE *pdos_open(const char* fname, const char* mode) {
     }
     
     // create the file to be returned
-    PDOS_FILE *file = NULL;
+    PDOS_FILE *file = malloc(sizeof(PDOS_FILE));
 
     // read the directory block into memory
     int shm_fd = shm_open(disk_name, O_RDWR, S_IRUSR | S_IWUSR);
     if (shm_fd == -1) {
         perror("shm_open");
+        free(file);
         exit(1);
     }
 
@@ -29,11 +30,12 @@ PDOS_FILE *pdos_open(const char* fname, const char* mode) {
     if (admin_block == MAP_FAILED) {
         perror("mmap");
         close(shm_fd);
+        free(file);
         exit(1);
     }
 
     // use pointer arithmetic to get to the fourth block (directory block)
-    DISK_BLOCK *dir_block = (DISK_BLOCK *) ((char *) admin_block + 3 * BLOCK_SIZE);
+    DISK_BLOCK *dir_block = (DISK_BLOCK *) ((char *) admin_block + (3 * BLOCK_SIZE));
 
     // check the directory entries of the directory block for the file
     int i;
@@ -53,15 +55,47 @@ PDOS_FILE *pdos_open(const char* fname, const char* mode) {
         // if the next entry is the max number of entries, then the directory is full
         if (next_entry == MAX_NUM_DIRECTORIES_ENTRIES) {
             printf("Directory is full\n");
+            free(file);
             return NULL;
         }
 
-        
+        // find the first free block in the FAT
+        int free_block = -1;
+        DISK_BLOCK *fat_block = (DISK_BLOCK *) ((char *) admin_block + (1 * BLOCK_SIZE));
+        for (int j = 0; j < MAXBLOCKS; j++) {
+            if (fat_block->fat[j] == UNUSED) {
+                free_block = j;
+                break;
+            }
+        }
 
-        return NULL;
+        // if no free blocks, the disk is full
+        if (free_block == -1) {
+            printf("Disk is full\n");
+            free(file);
+            return NULL;
+        }
 
+        // mark the block as in use (end of a chain of 1)
+        fat_block->fat[free_block] = ENDOFCHAIN;
 
+        // set up the directory entry
+        strncpy(dir_block->dir.dir_entry_list[next_entry].name, fname, MAXNAME);
+        dir_block->dir.dir_entry_list[next_entry].filefirstblock = free_block;
+        dir_block->dir.dir_entry_list[next_entry].filelength = 0;
+        dir_block->dir.dir_entry_list[next_entry].isdir = 0;
+        dir_block->dir.dir_entry_list[next_entry].filemodtime = time(NULL);
+
+        // increment the next entry counter of the directory block
+        dir_block->dir.nextEntry++;
+
+        // set up the file descriptor
+        strcpy(file->mode, mode);
+        file->pos = 0;
+        file->blocknum = free_block;
+        file->entrylistIdx = next_entry;
     }
+
     else {
         printf("File found\n");
 
