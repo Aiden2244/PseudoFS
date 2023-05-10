@@ -3,10 +3,11 @@
 
 int main() {
     // Create the disk
-    pdos_mkdisk("TestFS");
+    pdos_set_disk_name_var("TestFS");
+    pdos_mkdisk(1024 * 1024);
 
     // Create the file system
-    pdos_mkfs("TestFS", "Test File System");
+    pdos_mkfs("Test File System");
 
     int result = system("hexdump -C /dev/shm/TestFS");
 

@@ -1,7 +1,7 @@
 #include "pdosfilesys.h"
 
-void setup_ID_block(char *fs_name, char *ID) {
-    int shm_fd = shm_open(fs_name, O_RDWR, S_IRUSR | S_IWUSR);
+void setup_ID_block(char *ID) {
+    int shm_fd = shm_open(disk_name, O_RDWR, S_IRUSR | S_IWUSR);
     if (shm_fd == -1) {
         perror("shm_open");
         exit(1);
@@ -21,9 +21,9 @@ void setup_ID_block(char *fs_name, char *ID) {
     close(shm_fd);
 }
 
-void setup_FAT_blocks(char* fs_name) {
+void setup_FAT_blocks() {
     // Open the shared memory object
-    int shm_fd = shm_open(fs_name, O_RDWR, S_IRUSR | S_IWUSR);
+    int shm_fd = shm_open(disk_name, O_RDWR, S_IRUSR | S_IWUSR);
     DISK_BLOCK *block = mmap(NULL, BLOCK_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0 * PAGE_SIZE);
     if (block == MAP_FAILED) {
         perror("mmap");
@@ -47,9 +47,9 @@ void setup_FAT_blocks(char* fs_name) {
     close(shm_fd);
 }
 
-void setup_DIR_block(char* fs_name) {
+void setup_DIR_block() {
     // mmap the shared memory object
-    int shm_fd = shm_open(fs_name, O_RDWR, S_IRUSR | S_IWUSR);
+    int shm_fd = shm_open(disk_name, O_RDWR, S_IRUSR | S_IWUSR);
     DISK_BLOCK *block = mmap(NULL, BLOCK_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0 * PAGE_SIZE);
 
     // use pointer arithmetic to get to the fourth block
@@ -71,8 +71,9 @@ void setup_DIR_block(char* fs_name) {
 
 
 
-void pdos_mkfs(char *fs_name, char *ID) {
-    setup_ID_block(fs_name, ID);
-    setup_FAT_blocks(fs_name);
-    setup_DIR_block(fs_name);
+int pdos_mkfs(char *ID) {
+    setup_ID_block(ID);
+    setup_FAT_blocks();
+    setup_DIR_block();
+    return 0;
 }

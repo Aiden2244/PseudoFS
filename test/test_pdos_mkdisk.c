@@ -7,7 +7,8 @@ int main(int argc, char *argv[]) {
     int sz = 1024 * 1024;
 
     // Create a shared memory object with the name "TestFS"
-    pdos_mkdisk("TestFS");
+    pdos_set_disk_name_var("TestFS");
+    pdos_mkdisk(sz);
 
     // Open the shared memory object
     int shm_fd = shm_open("TestFS", O_RDONLY, S_IRUSR | S_IWUSR);

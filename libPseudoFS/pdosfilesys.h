@@ -114,10 +114,16 @@ typedef struct FILE_DESCRIPTOR{
 } PDOS_FILE;
 
 /*
- * forward declartion of your functions
- *	int pdos_mkfs(char *);
- * 	int pdos_mkdisk(int sz);
- *  PDOS_FILE * pdos_open(const char *filename, const char *mode);
- *  . . . 
+ * The name of the file system
  */
+extern char* disk_name;
+
+/*
+ * funtion declarations
+ */
+int pdos_set_disk_name_var(char *name);
+int pdos_mkfs(char *ID);
+int pdos_mkdisk(int sz);
+PDOS_FILE * pdos_open(const char *fname, const char *mode);
+
 #endif /* PDOSFILESYS_H */
