@@ -36,6 +36,10 @@
 #define TRUE	1
 
 #define PAGE_SIZE 	4096 
+
+#define ADMIN_BLOCK 0
+#define FAT_TABLE 1
+#define DIR_BLOCK 3
 /*
  * A structure for directory entries. Each file/dir in a directory block 
  * is represented by one of these
@@ -126,5 +130,13 @@ int pdos_mkfs(char *ID);
 int pdos_mkdisk(int sz);
 PDOS_FILE * pdos_open(const char *fname, const char *mode);
 int pdos_close(PDOS_FILE *file);
+char pdos_fgetc(PDOS_FILE *file);
+int pdos_fputc(char c, PDOS_FILE *file);
+int pdos_dir();
+int pdos_mkdir(char *dirname);
+int pdos_flush(PDOS_FILE *file);
+DISK_BLOCK *pdos_get_disk_block(int shm_fd, int block_num);
+int pdos_free_disk_block(int block_num);
+int pdos_get_shm_fd();
 
 #endif /* PDOSFILESYS_H */

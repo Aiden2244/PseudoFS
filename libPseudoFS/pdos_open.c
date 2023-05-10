@@ -45,6 +45,7 @@ PDOS_FILE *pdos_open(const char* fname, const char* mode) {
     strcpy(file->mode, mode);
     file->pos = 0;
     file->buffer = (DISK_BLOCK *) malloc(BLOCK_SIZE);
+
     // if i == MAX_NUM_DIRECTORIES_ENTRIES, then the file was not found
     if (i == MAX_NUM_DIRECTORIES_ENTRIES) {
         printf("File not found\n");
@@ -108,9 +109,6 @@ PDOS_FILE *pdos_open(const char* fname, const char* mode) {
         file->pos = dir_block->dir.dir_entry_list[i].filelength;
         file->blocknum = dir_block->dir.dir_entry_list[i].filefirstblock;
         file->entrylistIdx = i;
-
-        // set up the buffer for the file descriptor
-
 
     }
 
