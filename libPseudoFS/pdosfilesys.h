@@ -108,7 +108,7 @@ typedef struct FILE_DESCRIPTOR{
 	char 		mode[3];	// "r", "w" or "rw"
 	int 		pos;		// position in current block (byte location of next read/write in block)
 	short		blocknum;	// Number of the block being used
-    DISK_BLOCK      buffer;	// buffered reads and writes. Flush buffer when you access another block or fishish r/w
+    DISK_BLOCK      *buffer;	// buffered reads and writes. Flush buffer when you access another block or finish r/w
     unsigned char entrylistIdx;  // index in directory block
 
 } PDOS_FILE;

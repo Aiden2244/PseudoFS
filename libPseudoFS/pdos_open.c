@@ -13,15 +13,11 @@ PDOS_FILE *pdos_open(const char* fname, const char* mode) {
         printf("Error: Invalid mode.\n");
         return NULL;
     }
-    
-    // create the file to be returned
-    PDOS_FILE *file = malloc(sizeof(PDOS_FILE));
 
     // read the directory block into memory
     int shm_fd = shm_open(disk_name, O_RDWR, S_IRUSR | S_IWUSR);
     if (shm_fd == -1) {
         perror("shm_open");
-        free(file);
         exit(1);
     }
 
@@ -30,7 +26,6 @@ PDOS_FILE *pdos_open(const char* fname, const char* mode) {
     if (admin_block == MAP_FAILED) {
         perror("mmap");
         close(shm_fd);
-        free(file);
         exit(1);
     }
 
@@ -44,6 +39,12 @@ PDOS_FILE *pdos_open(const char* fname, const char* mode) {
             break;
         }
     }
+
+    // create the file to be returned
+    PDOS_FILE *file = malloc(sizeof(PDOS_FILE));
+    strcpy(file->mode, mode);
+    file->pos = 0;
+    file->buffer = NULL;
 
     // if i == MAX_NUM_DIRECTORIES_ENTRIES, then the file was not found
     if (i == MAX_NUM_DIRECTORIES_ENTRIES) {
@@ -90,14 +91,27 @@ PDOS_FILE *pdos_open(const char* fname, const char* mode) {
         dir_block->dir.nextEntry++;
 
         // set up the file descriptor
-        strcpy(file->mode, mode);
-        file->pos = 0;
+        
         file->blocknum = free_block;
         file->entrylistIdx = next_entry;
     }
 
     else {
         printf("File found\n");
+        // check if the file is a directory
+        if (dir_block->dir.dir_entry_list[i].isdir == 1) {
+            printf("Error: File is a directory\n");
+            free(file);
+            return NULL;
+        }
+
+        // set up the file descriptor
+        file->pos = dir_block->dir.dir_entry_list[i].filelength;
+        file->blocknum = dir_block->dir.dir_entry_list[i].filefirstblock;
+        file->entrylistIdx = i;
+
+        // set up the buffer for the file descriptor
+
 
     }
 
