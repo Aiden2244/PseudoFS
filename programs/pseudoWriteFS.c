@@ -18,28 +18,36 @@
  */
 int main(int argc, char** argv) {
   
-   /*
-    PDOS_FILE *fd = NULL;
-    
-
-    // open file for read/writing
-    fd = pdos_open("file1.txt", "rw");
-    
-    
-    int charValue = 'A';  // Letter A
-    int rtn = 0;
-    for(int i = 0; i < BLOCK_SIZE -1; i++, charValue++){
-		if (charValue > 'Z')
-			charValue = 'A';
-        rtn = pdos_fputc(charValue, fd);
-    }
-    
-    // close file
-    pdos_close(fd);
    
- 
- */
-    //return (EXIT_SUCCESS);
+   PDOS_FILE *fd = NULL;
+   pdos_set_disk_name_var("MYFS");
+    
+    
 
-    return 0;
+   // open file for read/writing
+   fd = pdos_open("file1.txt", "rw");
+   
+   
+   int charValue = 'A';  // Letter A
+
+   for(int i = 0; i < BLOCK_SIZE -1; i++, charValue++){
+   if (charValue > 'Z') {
+         charValue = 'A';
+      }
+      pdos_fputc(charValue, fd);
+   }
+
+
+   char first = pdos_fgetc(fd);
+   printf("First character in file: %c\n", first);
+
+   
+   // close file
+   pdos_close(fd);
+
+
+
+   //return (EXIT_SUCCESS);
+
+   return 0;
 }

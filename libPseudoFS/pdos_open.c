@@ -48,7 +48,6 @@ PDOS_FILE *pdos_open(const char* fname, const char* mode) {
 
     // if i == MAX_NUM_DIRECTORIES_ENTRIES, then the file was not found
     if (i == MAX_NUM_DIRECTORIES_ENTRIES) {
-        printf("File not found\n");
 
         // get the next available entry
         int next_entry = dir_block->dir.nextEntry;
@@ -97,7 +96,6 @@ PDOS_FILE *pdos_open(const char* fname, const char* mode) {
     }
 
     else {
-        printf("File found\n");
         // check if the file is a directory
         if (dir_block->dir.dir_entry_list[i].isdir == 1) {
             printf("Error: File is a directory\n");

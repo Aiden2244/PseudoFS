@@ -14,7 +14,7 @@ int pdos_flush(PDOS_FILE *file) {
     file->buffer = malloc(BLOCK_SIZE);
 
     // unmap the block's page
-    if (pdos_free_disk_block(current_block) != 0) {
+    if (pdos_free_disk_block(current_block, file->blocknum) != 0) {
         printf("Error: Could not free disk block.\n");
         return EOF;
     }
@@ -23,7 +23,6 @@ int pdos_flush(PDOS_FILE *file) {
     if (file->pos == BLOCK_SIZE) {
         // calculate the page number and offset within the page for the FAT
         int fat_page_number = 1 / 4;
-        int fat_offset_within_page = 1 % 4;
 
         // map the FAT's page into memory
         DISK_BLOCK *fat_page = mmap(NULL, PAGE_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, fat_page_number * PAGE_SIZE);
@@ -48,7 +47,7 @@ int pdos_flush(PDOS_FILE *file) {
         // if no free blocks, the disk is full
         if (free_block == -1) {
             printf("Error: Disk is full.\n");
-            pdos_free_disk_block(fat_block);
+            pdos_free_disk_block(fat_block, FAT_TABLE);
             close(shm_fd);
             return EOF;
         }
@@ -58,7 +57,7 @@ int pdos_flush(PDOS_FILE *file) {
         fat_block->fat[free_block] = ENDOFCHAIN;
 
         // unmap the FAT's page
-        if (pdos_free_disk_block(fat_block) != 0) {
+        if (pdos_free_disk_block(fat_block, FAT_TABLE) != 0) {
             printf("Error: Could not free disk block.\n");
             return EOF;
         }

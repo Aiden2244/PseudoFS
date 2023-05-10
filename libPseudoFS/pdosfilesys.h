@@ -136,7 +136,7 @@ int pdos_dir();
 int pdos_mkdir(char *dirname);
 int pdos_flush(PDOS_FILE *file);
 DISK_BLOCK *pdos_get_disk_block(int shm_fd, int block_num);
-int pdos_free_disk_block(int block_num);
+int pdos_free_disk_block(DISK_BLOCK*, int block_num);
 int pdos_get_shm_fd();
 
 #endif /* PDOSFILESYS_H */

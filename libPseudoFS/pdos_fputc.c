@@ -9,14 +9,13 @@ int pdos_fputc(char c, PDOS_FILE *file) {
     }
 
     // write the character to the buffer
-    file->buffer->data[file->pos] = (char) c;
+    file->buffer->data[file->pos] = c;
 
     // increment the position
     file->pos++;
 
     // if buffer is full, flush the buffer
     if (file->pos == BLOCK_SIZE) {
-        pdos_flush(file);
         if (pdos_flush(file) != 0) {
             printf("Error: Could not flush buffer.\n");
             return 1;
@@ -32,7 +31,7 @@ int pdos_fputc(char c, PDOS_FILE *file) {
     
 
     // clean up
-    if (pdos_free_disk_block(dir_block) != 0) {
+    if (pdos_free_disk_block(dir_block, DIR_BLOCK) != 0) {
         printf("Error: Could not free disk block.\n");
         return 1;
     }
