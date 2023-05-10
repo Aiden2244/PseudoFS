@@ -60,7 +60,6 @@ int main() {
     // validate that the fields of file = the fields of file3
     if ((strcmp(file->mode, file3->mode) == 0) 
         && (file->pos == file3->pos) 
-        && (file->buffer == file3->buffer)
         && (file->entrylistIdx == file3->entrylistIdx)
         && (file->blocknum == file3->blocknum)) {
         printf("Success: File fields are equal.\n");
@@ -74,9 +73,9 @@ int main() {
     // will need to code later once support for creating files is added
 
     // delete the disk
-    free(file);
-    free(file2);
-    free(file3);
+    pdos_close(file);
+    pdos_close(file2);
+    pdos_close(file3);
 
     remove("/dev/shm/TestFS");
 

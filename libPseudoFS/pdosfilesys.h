@@ -125,5 +125,6 @@ int pdos_set_disk_name_var(char *name);
 int pdos_mkfs(char *ID);
 int pdos_mkdisk(int sz);
 PDOS_FILE * pdos_open(const char *fname, const char *mode);
+int pdos_close(PDOS_FILE *file);
 
 #endif /* PDOSFILESYS_H */

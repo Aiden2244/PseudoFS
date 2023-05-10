@@ -44,8 +44,7 @@ PDOS_FILE *pdos_open(const char* fname, const char* mode) {
     PDOS_FILE *file = malloc(sizeof(PDOS_FILE));
     strcpy(file->mode, mode);
     file->pos = 0;
-    file->buffer = NULL;
-
+    file->buffer = (DISK_BLOCK *) malloc(BLOCK_SIZE);
     // if i == MAX_NUM_DIRECTORIES_ENTRIES, then the file was not found
     if (i == MAX_NUM_DIRECTORIES_ENTRIES) {
         printf("File not found\n");
