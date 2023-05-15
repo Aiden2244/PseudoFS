@@ -67,6 +67,22 @@ int main() {
     printf("Opened file myfile.txt in read mode:\n");
     system("hexdump -C /dev/shm/TestFS");
 
+    // verify that the buffer is not null
+    if (file2->buffer == NULL) {
+        printf("Error: Buffer is nTull.\n");
+        remove("/dev/shm/TestFS");
+        return -1;
+    }
+    // if not null, manually read contents
+    else {
+        printf("Buffer is not null.\n");
+        // printf("Buffer contents: ");
+        // for (int i = 0; i < BLOCK_SIZE; i++) {
+        //     printf("%d: %c, ", i, file2->buffer->data[i]);
+        // }
+        // printf("\n");
+    }
+
     // Read the data from the file and verify it
     for (char expected_ch = 'A'; expected_ch <= 'Z'; expected_ch++) {
         int ch = pdos_fgetc(file2);

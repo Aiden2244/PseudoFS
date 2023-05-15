@@ -10,6 +10,8 @@ int pdos_fputc(char c, PDOS_FILE *file) {
 
     // write the character to the buffer
     file->buffer->data[file->pos] = c;
+    printf("file pos: %d\n", file->pos);
+    printf("character writing: %c\n", c);
 
     // increment the position
     file->pos++;
@@ -28,6 +30,8 @@ int pdos_fputc(char c, PDOS_FILE *file) {
     // increment the file size
     DISK_BLOCK *dir_block = pdos_get_disk_block(shm_fd, DIR_BLOCK);
     dir_block->dir.dir_entry_list[file->entrylistIdx].filelength++;
+    printf("file index: %d\n", file->entrylistIdx);
+    printf("file length: %d\n", dir_block->dir.dir_entry_list[file->entrylistIdx].filelength);
     
 
     // clean up

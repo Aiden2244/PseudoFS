@@ -2,6 +2,7 @@
 
 PDOS_FILE *pdos_open(const char* fname, const char* mode) {
 
+    printf("Opening file %s in mode %s\n", fname, mode);
     // validate that the name is less than the max name
     if (strlen(fname) > MAXNAME) {
         printf("Error: File name is too long.\n");
@@ -39,6 +40,8 @@ PDOS_FILE *pdos_open(const char* fname, const char* mode) {
             break;
         }
     }
+    printf("i: %d\n", i);
+    printf("max entries: %d\n", (int) MAX_NUM_DIRECTORIES_ENTRIES);
 
     // create the file to be returned
     PDOS_FILE *file = malloc(sizeof(PDOS_FILE));
@@ -48,10 +51,10 @@ PDOS_FILE *pdos_open(const char* fname, const char* mode) {
 
     // if i == MAX_NUM_DIRECTORIES_ENTRIES, then the file was not found
     if (i == MAX_NUM_DIRECTORIES_ENTRIES) {
-
+        printf("The file %s did not exist. Creating it now...\n", fname);
         // get the next available entry
         int next_entry = dir_block->dir.nextEntry;
-
+        printf("next entry: %d\n", next_entry);
         // if the next entry is the max number of entries, then the directory is full
         if (next_entry == MAX_NUM_DIRECTORIES_ENTRIES) {
             printf("Directory is full\n");
@@ -76,15 +79,22 @@ PDOS_FILE *pdos_open(const char* fname, const char* mode) {
             return NULL;
         }
 
+        printf("first free block: %d\n", free_block);
+
         // mark the block as in use (end of a chain of 1)
         fat_block->fat[free_block] = ENDOFCHAIN;
 
         // set up the directory entry
         strncpy(dir_block->dir.dir_entry_list[next_entry].name, fname, MAXNAME);
+        printf("name: %s\n", dir_block->dir.dir_entry_list[next_entry].name);
         dir_block->dir.dir_entry_list[next_entry].filefirstblock = free_block;
+        printf("first block: %d\n", dir_block->dir.dir_entry_list[next_entry].filefirstblock);
         dir_block->dir.dir_entry_list[next_entry].filelength = 0;
+        printf("length: %d\n", dir_block->dir.dir_entry_list[next_entry].filelength);
         dir_block->dir.dir_entry_list[next_entry].isdir = 0;
+        printf("isdir: %d\n", dir_block->dir.dir_entry_list[next_entry].isdir);
         dir_block->dir.dir_entry_list[next_entry].filemodtime = time(NULL);
+        printf("modtime: %ld\n", dir_block->dir.dir_entry_list[next_entry].filemodtime);
 
         // increment the next entry counter of the directory block
         dir_block->dir.nextEntry++;
@@ -92,10 +102,13 @@ PDOS_FILE *pdos_open(const char* fname, const char* mode) {
         // set up the file descriptor
         
         file->blocknum = free_block;
+        printf("blocknum: %d\n", file->blocknum);
         file->entrylistIdx = next_entry;
+        printf("entrylistIdx: %d\n", file->entrylistIdx);
     }
 
     else {
+        printf("The file %s was found.\n", fname);
         // check if the file is a directory
         if (dir_block->dir.dir_entry_list[i].isdir == 1) {
             printf("Error: File is a directory\n");
@@ -104,9 +117,11 @@ PDOS_FILE *pdos_open(const char* fname, const char* mode) {
         }
 
         // set up the file descriptor
-        file->pos = dir_block->dir.dir_entry_list[i].filelength;
+        printf("pos: %d\n", file->pos);
         file->blocknum = dir_block->dir.dir_entry_list[i].filefirstblock;
+        printf("blocknum: %d\n", file->blocknum);
         file->entrylistIdx = i;
+        printf("entrylistIdx: %d\n", file->entrylistIdx);
 
     }
 

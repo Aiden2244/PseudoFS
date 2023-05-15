@@ -20,7 +20,7 @@ int main(int argc, char** argv) {
   
    
    PDOS_FILE *fd = NULL;
-   pdos_set_disk_name_var("MYFS");
+   pdos_set_disk_name_var("foo");
     
     
 

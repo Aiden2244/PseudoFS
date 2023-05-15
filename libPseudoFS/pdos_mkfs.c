@@ -39,8 +39,7 @@ void setup_FAT_blocks() {
     block->fat[1] = 2;
     block->fat[2] = ENDOFCHAIN;
     block->fat[3] = ENDOFCHAIN;
-    block->fat[4] = ENDOFCHAIN;
-    for (int i = 5; i < MAXBLOCKS; i++) {
+    for (int i = 4; i < MAXBLOCKS; i++) {
         block->fat[i] = UNUSED;
     }
     munmap(block, BLOCK_SIZE);

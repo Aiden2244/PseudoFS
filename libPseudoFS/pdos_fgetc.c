@@ -10,13 +10,15 @@ char pdos_fgetc(PDOS_FILE *file) {
     int shm_fd = pdos_get_shm_fd();
 
     // if the file buffer is empty, read the first block in the chain
-    if (file->buffer == NULL && file->pos == 0) {
+    if (file->pos == 0) {
 
         // Load the first block in the chain
         DISK_BLOCK *dir = pdos_get_disk_block(shm_fd, DIR_BLOCK);
 
         // Get the block number of the first block in the chain
         int block_num = dir->dir.dir_entry_list[file->entrylistIdx].filefirstblock;
+        printf("Block num %d\n", block_num);
+        pdos_free_disk_block(dir, DIR_BLOCK);
 
         DISK_BLOCK *disk_block = pdos_get_disk_block(shm_fd, block_num);
         if (disk_block == MAP_FAILED) {
@@ -25,10 +27,10 @@ char pdos_fgetc(PDOS_FILE *file) {
             file->buffer = NULL;
             return EOF;
         }
-        memcpy(file->buffer, disk_block, BLOCK_SIZE);
+        memcpy(file->buffer->data, disk_block, BLOCK_SIZE);
         file->pos = 0;
         pdos_free_disk_block(disk_block, block_num);
-        pdos_free_disk_block(dir, DIR_BLOCK);
+        
 
     }
 
@@ -59,7 +61,7 @@ char pdos_fgetc(PDOS_FILE *file) {
             return EOF;
         }
 
-        memcpy(file->buffer, db, BLOCK_SIZE);
+        memcpy(file->buffer->data, db, BLOCK_SIZE);
         pdos_free_disk_block(db, next_block);
 
         file->blocknum = next_block;

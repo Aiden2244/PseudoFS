@@ -1,17 +1,18 @@
 #include "pdosfilesys.h"
 
 int pdos_flush(PDOS_FILE *file) {
+
+    printf("Flushing buffer...\n");
+
     // get the shared memory object
     int shm_fd = pdos_get_shm_fd();
 
     DISK_BLOCK *current_block = pdos_get_disk_block(shm_fd, file->blocknum);
 
     // write buffer to disk
-    memcpy((char*)current_block, file->buffer, BLOCK_SIZE);
+    memcpy(current_block, file->buffer, BLOCK_SIZE);
 
-    // clear the buffer
-    free(file->buffer);
-    file->buffer = malloc(BLOCK_SIZE);
+   
 
     // unmap the block's page
     if (pdos_free_disk_block(current_block, file->blocknum) != 0) {
@@ -21,6 +22,7 @@ int pdos_flush(PDOS_FILE *file) {
 
     // if the file position is at the end of the block, then we need a new block
     if (file->pos == BLOCK_SIZE) {
+        printf("File position is at the end of the block.\n");
         // calculate the page number and offset within the page for the FAT
         int fat_page_number = 1 / 4;
 
@@ -72,6 +74,10 @@ int pdos_flush(PDOS_FILE *file) {
         perror("close");
         return EOF;
     }
+
+     // clear the buffer
+    free(file->buffer);
+    file->buffer = malloc(BLOCK_SIZE);
 
     return 0;
 }
